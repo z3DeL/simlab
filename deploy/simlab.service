@@ -1,0 +1,15 @@
+[Unit]
+Description=SimLab FastAPI service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/simlab/backend
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/simlab/.venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

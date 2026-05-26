@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.db
+.git
+.github
+.vscode
+docs
+packages
+simlab
+simlab.zip
+frontend/node_modules
+frontend/dist
+frontend/test-results
+примеры
+*.log

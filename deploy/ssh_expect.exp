@@ -1,0 +1,16 @@
+set timeout 7200
+set host [lindex $argv 0]
+set password [lindex $argv 1]
+set local_file [lindex $argv 2]
+set remote_file [lindex $argv 3]
+set remote_cmd [lindex $argv 4]
+
+spawn scp -o StrictHostKeyChecking=no $local_file root@$host:$remote_file
+expect "password:"
+send "$password\r"
+expect eof
+
+spawn ssh -tt -o StrictHostKeyChecking=no root@$host $remote_cmd
+expect "password:"
+send "$password\r"
+expect eof

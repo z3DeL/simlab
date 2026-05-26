@@ -1,0 +1,13 @@
+services:
+  simlab:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/sim_lab.db
+    volumes:
+      - simlab-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  simlab-data:
