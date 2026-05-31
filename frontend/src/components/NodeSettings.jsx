@@ -264,7 +264,7 @@ export default function NodeSettings({ node, nodes = [], updateNode, style = {} 
               <input
                 type="number" className="input-field" step="0.1" min="0"
                 value={node.data?.service_time ?? 0}
-                onChange={e => handleChange('service_time', parseFloat(e.target.value))}
+                onChange={e => handleChange('service_time', parseFloat((e.target.value || '').toString().replace(',', '.')))}
               />
             </div>
             {branchMode === 'probability' && (
@@ -281,7 +281,7 @@ export default function NodeSettings({ node, nodes = [], updateNode, style = {} 
                         onChange={e => {
                           const newW = [...branchWeights];
                           while (newW.length < branchOutputs) newW.push(0);
-                          newW[i] = parseFloat(e.target.value) || 0;
+                          newW[i] = parseFloat((e.target.value || '').toString().replace(',', '.')) || 0;
                           handleChange('weights', newW.slice(0, branchOutputs));
                         }}
                       />
