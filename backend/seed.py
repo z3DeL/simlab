@@ -343,6 +343,119 @@ db.commit()
 print(f"✅ Лабораторная 1 создана (id={lab1.id})")
 
 # ──────────────────────────────────────────────────────────
+# Лабораторная 2 — Пошив шляп с браком и переделкой (две/одна очередь)
+# ──────────────────────────────────────────────────────────
+
+hat_schema_stage1 = {
+    "nodes": [
+        {"id": "src_orders", "type": "source", "position": {"x": 50, "y": 160},
+         "data": {"label": "Заказы", "interval": {"dist": "uniform", "params": {"a": 2, "b": 4}}}},
+        {"id": "queue_main", "type": "queue", "position": {"x": 260, "y": 160},
+         "data": {"label": "Очередь пошива"}},
+        {"id": "srv_sew1", "type": "server", "position": {"x": 480, "y": 160},
+         "data": {"label": "Пошив-1", "process_time": {"dist": "uniform", "params": {"a": 4, "b": 6}}}},
+        {"id": "br_qc", "type": "branch", "position": {"x": 680, "y": 160},
+         "data": {"label": "Контроль качества", "probabilities": [0.8, 0.2]}},
+        {"id": "queue_rework", "type": "queue", "position": {"x": 880, "y": 260},
+         "data": {"label": "Очередь переделки"}},
+        {"id": "srv_sew2", "type": "server", "position": {"x": 1080, "y": 260},
+         "data": {"label": "Пошив-2", "process_time": {"dist": "uniform", "params": {"a": 1, "b": 3}}}},
+        {"id": "br_qc2", "type": "branch", "position": {"x": 1280, "y": 260},
+         "data": {"label": "Контроль 0%", "probabilities": [1.0, 0.0]}},
+        {"id": "sink_done", "type": "sink", "position": {"x": 1480, "y": 160},
+         "data": {"label": "Готово"}},
+    ],
+    "edges": [
+        {"id": "e-src-queue", "source": "src_orders", "target": "queue_main"},
+        {"id": "e-queue-srv1", "source": "queue_main", "target": "srv_sew1"},
+        {"id": "e-srv1-branch", "source": "srv_sew1", "target": "br_qc"},
+        {"id": "e-branch-good", "source": "br_qc", "target": "sink_done", "sourceHandle": "out_0"},
+        {"id": "e-branch-bad", "source": "br_qc", "target": "queue_rework", "sourceHandle": "out_1"},
+        {"id": "e-rework-srv2", "source": "queue_rework", "target": "srv_sew2"},
+        {"id": "e-srv2-branch2", "source": "srv_sew2", "target": "br_qc2"},
+        {"id": "e-branch2-good", "source": "br_qc2", "target": "sink_done", "sourceHandle": "out_0"},
+    ],
+}
+
+hat_description = r"""
+# Пошив шляп с браком и переделкой
+
+**Цель:** исследовать влияние вероятности брака (K%) на выпуск и очереди. 
+**Метрика удовлетворённости:** выполненные / поступившие.
+
+Этап 1 — базовая схема на готовых блоках: две очереди (основная и для переделки).
+Этап 2 — улучшенная логика (приоритеты/условная маршрутизация) — студент может доработать Custom-блоками.
+Этап 3 — свободный эксперимент (например, добавить RL или иные эвристики).
+"""
+
+lab_hat = LabWork(
+    title="Пошив шляп с браком и переделкой",
+    description_md=hat_description,
+    default_schema_json=hat_schema_stage1,
+    order=2,
+)
+db.add(lab_hat)
+db.commit()
+print(f"✅ Лабораторная 2 создана (id={lab_hat.id})")
+
+# ──────────────────────────────────────────────────────────
+# Тестовый студент для лабораторной 2
+# ──────────────────────────────────────────────────────────
+
+hat_student = db.query(User).filter(User.username == "hat_student").first()
+if not hat_student:
+    hat_student = User(
+        username="hat_student",
+        full_name="Студент Пошив",
+        hashed_password=hash_password("hat_student"),
+        role="student",
+    )
+    db.add(hat_student)
+    db.commit()
+    db.refresh(hat_student)
+    print("✅ Создан студент: hat_student / hat_student")
+else:
+    db.query(Project).filter(Project.user_id == hat_student.id).delete()
+    db.commit()
+    print("ℹ️  Студент hat_student уже существует, проекты пересозданы")
+
+# Этап 1 — базовая схема
+project_hat_1 = Project(
+    name="Пошив шляп — этап 1 (две очереди)",
+    user_id=hat_student.id,
+    schema_json=hat_schema_stage1,
+    custom_code="",
+    rl_code="",
+)
+
+# Этап 2 — заготовка под улучшения
+project_hat_2 = Project(
+    name="Пошив шляп — этап 2 (улучшенная логика)",
+    user_id=hat_student.id,
+    schema_json=hat_schema_stage1,
+    custom_code="",
+    rl_code="",
+)
+
+# Этап 3 — свободный эксперимент
+project_hat_3 = Project(
+    name="Пошив шляп — этап 3 (эксперимент)",
+    user_id=hat_student.id,
+    schema_json=hat_schema_stage1,
+    custom_code="",
+    rl_code="",
+)
+
+db.add_all([project_hat_1, project_hat_2, project_hat_3])
+db.commit()
+print(
+    f"✅ Созданы проекты для hat_student: "
+    f"1) {project_hat_1.name} (id={project_hat_1.id}), "
+    f"2) {project_hat_2.name} (id={project_hat_2.id}), "
+    f"3) {project_hat_3.name} (id={project_hat_3.id})"
+)
+
+# ──────────────────────────────────────────────────────────
 # Тестовый студент с 4 проектами (по этапам лабораторной)
 # ──────────────────────────────────────────────────────────
 
