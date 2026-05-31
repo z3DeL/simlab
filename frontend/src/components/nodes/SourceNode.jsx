@@ -8,6 +8,7 @@ export default function SourceNode({ data }) {
   let desc = 'Пакетный';
   if (interval.dist === 'exponential') desc = `exp(λ=${interval.params.lam})`;
   else if (interval.dist === 'normal') desc = `norm(μ=${interval.params.mu})`;
+  else if (interval.dist === 'uniform') desc = `uniform(${interval.params.a}..${interval.params.b})`;
   else if (interval.dist === 'constant') desc = `const(${interval.params.value})`;
 
   return (

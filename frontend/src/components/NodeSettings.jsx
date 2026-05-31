@@ -105,6 +105,7 @@ export default function NodeSettings({ node, nodes = [], updateNode, style = {} 
               >
                 <option value="exponential">Экспоненциальное</option>
                 <option value="normal">Нормальное</option>
+                <option value="uniform">Равномерное</option>
                 <option value="constant">Константа</option>
               </select>
             </div>
@@ -134,6 +135,26 @@ export default function NodeSettings({ node, nodes = [], updateNode, style = {} 
                     type="number" className="input-field" step="0.1"
                     value={node.data?.interval?.params?.sigma || 1.0}
                     onChange={e => handleChange('interval.params.sigma', parseFloat(e.target.value))}
+                  />
+                </div>
+              </>
+            )}
+            {node.data?.interval?.dist === 'uniform' && (
+              <>
+                <div className="form-group">
+                  <label>a (мин)</label>
+                  <input 
+                    type="number" className="input-field" step="0.1"
+                    value={node.data?.interval?.params?.a || 1.0}
+                    onChange={e => handleChange('interval.params.a', parseFloat(e.target.value))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>b (макс)</label>
+                  <input 
+                    type="number" className="input-field" step="0.1"
+                    value={node.data?.interval?.params?.b || 5.0}
+                    onChange={e => handleChange('interval.params.b', parseFloat(e.target.value))}
                   />
                 </div>
               </>
